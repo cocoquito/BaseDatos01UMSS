@@ -1,0 +1,259 @@
+/*
+SQLyog Professional v13.1.1 (64 bit)
+MySQL - 8.0.25 : Database - enviosventas3
+*********************************************************************
+*/
+
+/*!40101 SET NAMES utf8 */;
+
+/*!40101 SET SQL_MODE=''*/;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`enviosventas3` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `enviosventas3`;
+
+/*Table structure for table `ciudad` */
+
+DROP TABLE IF EXISTS `ciudad`;
+
+CREATE TABLE `ciudad` (
+  `id_ciudad` int NOT NULL,
+  `nom_ciudad` varchar(25) NOT NULL,
+  `geo_loc` char(25) NOT NULL,
+  PRIMARY KEY (`id_ciudad`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `ciudad` */
+
+insert  into `ciudad`(`id_ciudad`,`nom_ciudad`,`geo_loc`) values 
+(600,'cbba','21548 -12'),
+(601,'sacaba','5698 -25'),
+(602,'chapare','69896 -58'),
+(603,'punata','4578 -89'),
+(604,'colcapirhua','3265 -089'),
+(605,'vinto','2154- 256');
+
+/*Table structure for table `clientes` */
+
+DROP TABLE IF EXISTS `clientes`;
+
+CREATE TABLE `clientes` (
+  `id_cliente` int NOT NULL AUTO_INCREMENT,
+  `NOM_CLIENTE` varchar(45) NOT NULL,
+  `DIR_CLIENTE` varchar(45) NOT NULL,
+  `ID_CIUDAD` int DEFAULT NULL,
+  PRIMARY KEY (`id_cliente`),
+  KEY `FK_CUENTA_CON_PERS_EN` (`ID_CIUDAD`),
+  CONSTRAINT `FK_CUENTA_CON_PERS_EN` FOREIGN KEY (`ID_CIUDAD`) REFERENCES `ciudad` (`id_ciudad`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=506 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `clientes` */
+
+insert  into `clientes`(`id_cliente`,`NOM_CLIENTE`,`DIR_CLIENTE`,`ID_CIUDAD`) values 
+(500,'carlos quiroga','tumusla 235',602),
+(501,'jorge ledezma','valdivia 1857',604),
+(502,'cesar ledo','heroinas 569',605),
+(503,'fredo dorf','ballivian 566',600),
+(504,'maria flores','aroma 258',601),
+(505,'ines camacho','merced 696',603);
+
+/*Table structure for table `detalleorden` */
+
+DROP TABLE IF EXISTS `detalleorden`;
+
+CREATE TABLE `detalleorden` (
+  `ID_DET_ORDEN` int NOT NULL,
+  `ID_REPUESTOS` int DEFAULT NULL,
+  `ID_ORDEN` int DEFAULT NULL,
+  `CANTIDAD` int NOT NULL,
+  PRIMARY KEY (`ID_DET_ORDEN`),
+  KEY `FK_ES_PARTE_DE` (`ID_REPUESTOS`),
+  KEY `FK_TIENE_UN` (`ID_ORDEN`),
+  CONSTRAINT `FK_ES_PARTE_DE` FOREIGN KEY (`ID_REPUESTOS`) REFERENCES `repuestos` (`ID_REPUESTOS`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_TIENE_UN` FOREIGN KEY (`ID_ORDEN`) REFERENCES `ordenes` (`ID_ORDEN`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `detalleorden` */
+
+insert  into `detalleorden`(`ID_DET_ORDEN`,`ID_REPUESTOS`,`ID_ORDEN`,`CANTIDAD`) values 
+(5000,1100,2000,10),
+(5001,1101,2001,12),
+(5002,1101,2002,15),
+(5003,1102,2002,11),
+(5004,1103,2003,14),
+(5005,1104,2004,15),
+(5006,1103,2004,16),
+(5007,1102,2005,13),
+(5008,1101,2006,11),
+(5009,1102,2007,12),
+(5010,1104,2008,11),
+(5011,1105,2009,10),
+(5012,1106,2010,5),
+(5013,1107,2010,10),
+(5014,1108,2010,12);
+
+/*Table structure for table `empleados` */
+
+DROP TABLE IF EXISTS `empleados`;
+
+CREATE TABLE `empleados` (
+  `ID_EMPLEADO` int NOT NULL,
+  `NOMBRE_EMPLEADO` varchar(45) NOT NULL,
+  `FECH_NAC_EMP` date NOT NULL,
+  `SALARIO` int NOT NULL,
+  `FECH_ING_EMP` date NOT NULL,
+  `ID_CIUDAD` int DEFAULT NULL,
+  PRIMARY KEY (`ID_EMPLEADO`),
+  KEY `FK_CUENTA_CON_PERSONAS_EN` (`ID_CIUDAD`),
+  CONSTRAINT `FK_CUENTA_CON_PERSONAS_EN` FOREIGN KEY (`ID_CIUDAD`) REFERENCES `ciudad` (`id_ciudad`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `empleados` */
+
+insert  into `empleados`(`ID_EMPLEADO`,`NOMBRE_EMPLEADO`,`FECH_NAC_EMP`,`SALARIO`,`FECH_ING_EMP`,`ID_CIUDAD`) values 
+(800,'federico alvarez','2000-12-05',1200,'2021-01-15',600),
+(801,'freddy campero','1999-02-28',1250,'2021-02-16',605),
+(802,'jorge omonte','1998-04-30',3000,'2019-12-11',602),
+(803,'fidel anze','1980-05-21',4500,'2017-10-05',603),
+(804,'laura campos','1999-07-31',2500,'2019-05-21',605),
+(805,'juana hidalgo','1989-08-05',2580,'2019-05-21',604),
+(806,'veronica pujra','1980-07-12',10000,'2000-05-21',601);
+
+/*Table structure for table `ordenes` */
+
+DROP TABLE IF EXISTS `ordenes`;
+
+CREATE TABLE `ordenes` (
+  `ID_ORDEN` int NOT NULL,
+  `ID_EMPLEADO` int DEFAULT NULL,
+  `ID_CLIENTE` int DEFAULT NULL,
+  `FECHA_REC_EMP` date NOT NULL,
+  `FECHA_ENVIO_CLI` date NOT NULL,
+  `OBS` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`ID_ORDEN`),
+  KEY `FK_REALIZAN` (`ID_EMPLEADO`),
+  KEY `FK_SOLICITAN` (`ID_CLIENTE`),
+  CONSTRAINT `FK_REALIZAN` FOREIGN KEY (`ID_EMPLEADO`) REFERENCES `empleados` (`ID_EMPLEADO`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_SOLICITAN` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `clientes` (`id_cliente`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `ordenes` */
+
+insert  into `ordenes`(`ID_ORDEN`,`ID_EMPLEADO`,`ID_CLIENTE`,`FECHA_REC_EMP`,`FECHA_ENVIO_CLI`,`OBS`) values 
+(2000,800,500,'2021-01-14','2021-02-12',NULL),
+(2001,801,502,'2021-05-15','2021-03-12',NULL),
+(2002,800,501,'2021-05-16','2021-02-12',NULL),
+(2003,802,503,'2021-01-16','2021-02-12',NULL),
+(2004,803,504,'2021-01-17','2021-03-12',NULL),
+(2005,804,504,'2021-05-17','2021-04-12',NULL),
+(2006,806,505,'2021-01-17','2021-01-17',NULL),
+(2007,800,500,'2021-05-17','2021-05-17',NULL),
+(2008,805,505,'2021-02-18','2021-06-01',NULL),
+(2009,801,505,'2021-02-20','2021-07-10',NULL),
+(2010,802,501,'2021-05-18','2021-06-15',NULL);
+
+/*Table structure for table `repuestos` */
+
+DROP TABLE IF EXISTS `repuestos`;
+
+CREATE TABLE `repuestos` (
+  `ID_REPUESTOS` int NOT NULL,
+  `COD_TIP_REP` int DEFAULT NULL,
+  `NOM_REPUESTO` varchar(30) NOT NULL,
+  `CANT_EX_REP` int NOT NULL,
+  `PRECIO_REP` int NOT NULL,
+  `STOCK_MIN_REP` int NOT NULL,
+  PRIMARY KEY (`ID_REPUESTOS`),
+  KEY `FK_PERTENECE` (`COD_TIP_REP`),
+  CONSTRAINT `FK_PERTENECE` FOREIGN KEY (`COD_TIP_REP`) REFERENCES `tipo_de_repuesto` (`COD_TIP_REP`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `repuestos` */
+
+insert  into `repuestos`(`ID_REPUESTOS`,`COD_TIP_REP`,`NOM_REPUESTO`,`CANT_EX_REP`,`PRECIO_REP`,`STOCK_MIN_REP`) values 
+(1100,700,'engranaje recto',1000,15,450),
+(1101,700,'engr helicoidal',1200,20,250),
+(1102,700,'engr fish stick',780,18,250),
+(1103,701,'Rodamiento tornillo',558,20,250),
+(1104,701,'Rodamiento planetario',700,18,250),
+(1105,702,'Disc Fren desbaste',1200,25,250),
+(1106,702,'Disc Fren derapado',520,12,250),
+(1107,703,'Resorte mecanico',258,8,250),
+(1108,703,'Resorte horse foot',300,5,250),
+(1109,704,'clavo 1\"',1500,1,350),
+(1110,704,'clavo 1/5\"',1800,1,380),
+(1111,705,'tornillo empotre',800,2,400),
+(1112,705,'tornillo media',820,2,258),
+(1113,706,'sierra agua',154,4,50),
+(1114,706,'sierra metalica',254,4,50),
+(1115,707,'lija agua',320,5,120),
+(1116,707,'lija metalica',320,6,120),
+(1117,708,'cemento ip40',5000,45,700),
+(1118,708,'cemento ip60',8000,55,700),
+(1119,709,'yeso primera',2500,15,1200),
+(1120,709,'yeso segunda',2800,12,1200);
+
+/*Table structure for table `telefono_cliente` */
+
+DROP TABLE IF EXISTS `telefono_cliente`;
+
+CREATE TABLE `telefono_cliente` (
+  `ID_TELF_CLI` int NOT NULL,
+  `ID_CLIENTE` int DEFAULT NULL,
+  `NRO_TELF_CLIE` int NOT NULL,
+  PRIMARY KEY (`ID_TELF_CLI`),
+  KEY `FK_CUENTAN_CON` (`ID_CLIENTE`),
+  CONSTRAINT `FK_CUENTAN_CON` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `clientes` (`id_cliente`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `telefono_cliente` */
+
+insert  into `telefono_cliente`(`ID_TELF_CLI`,`ID_CLIENTE`,`NRO_TELF_CLIE`) values 
+(700,500,2445555),
+(701,500,4125553),
+(702,500,7285669),
+(703,501,4289964),
+(704,502,4558983),
+(705,502,7178889),
+(706,503,7214588),
+(707,503,6942589),
+(708,503,6589965),
+(709,504,7045896),
+(710,504,4240647),
+(711,505,4200850),
+(712,505,7158964),
+(713,505,4280125);
+
+/*Table structure for table `tipo_de_repuesto` */
+
+DROP TABLE IF EXISTS `tipo_de_repuesto`;
+
+CREATE TABLE `tipo_de_repuesto` (
+  `COD_TIP_REP` int NOT NULL,
+  `NOM_TIPO_REP` varchar(15) NOT NULL,
+  `DESCRIPCION_TIPO` varchar(45) NOT NULL,
+  PRIMARY KEY (`COD_TIP_REP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `tipo_de_repuesto` */
+
+insert  into `tipo_de_repuesto`(`COD_TIP_REP`,`NOM_TIPO_REP`,`DESCRIPCION_TIPO`) values 
+(700,'engranajes','marca china'),
+(701,'rodamientos','solo machine'),
+(702,'discos de freno','size xxl'),
+(703,'resorte','solo mec'),
+(704,'clavo','desde 2 \"'),
+(705,'tornillo','solo peruano'),
+(706,'sierra','mec, madera agua'),
+(707,'lija','agua,madera,acero'),
+(708,'cemento','fancesa,yura'),
+(709,'yeso','solo nacional');
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
