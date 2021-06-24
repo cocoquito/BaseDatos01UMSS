@@ -5,7 +5,8 @@
 
 SELECT empleados.nombre_empleado, empleados.salario, ciudad.nom_ciudad
 from empleados, ciudad, ordenes, repuestos, detalleorden, tipo_de_repuesto
-where month(ordenes.fecha_rec_emp)=1 AND month(ordenes.fecha_envio_cli)=2
+where (ordenes.fecha_rec_emp >= '2021-01-01' and ordenes.FECHA_REC_EMP <= '2021-01-31')
+AND (ordenes.FECHA_ENVIO_CLI>='2021-02-01' and ordenes.FECHA_ENVIO_CLI<='2021-02-28')
 AND tipo_de_repuesto.NOM_TIPO_REP not like 'engr%'
 AND ciudad.id_ciudad = empleados.ID_CIUDAD AND empleados.ID_EMPLEADO = ordenes.ID_EMPLEADO
 AND tipo_de_repuesto.COD_TIP_REP = repuestos.COD_TIP_REP AND repuestos.ID_REPUESTOS = detalleorden.ID_REPUESTOS
